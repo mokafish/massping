@@ -1,0 +1,40 @@
+{
+  "name": "xping",
+  "description": "",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "bin": {
+    "xping": "./cli/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mokafish/xping.git"
+  },
+  "keywords": [
+    "test",
+    "http",
+    "ping"
+  ],
+  "author": "mokafish",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mokafish/xping/issues"
+  },
+  "homepage": "https://github.com/mokafish/xping#readme",
+  "devDependencies": {
+    "ava": "^6.4.0"
+  },
+  "dependencies": {
+    "got": "^14.4.7",
+    "meow": "^13.2.0",
+    "user-agents": "^1.1.593",
+    "winston": "^3.17.0"
+  },
+  "ava": {
+    "snapshotDir": "test/.snapshots"
+  }
+}
