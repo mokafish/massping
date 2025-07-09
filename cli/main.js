@@ -8,7 +8,7 @@
 import fs from 'fs/promises';
 import meow from 'meow';
 import winston from 'winston'
-import App from '../kit/ping.js'
+import App from '../app/app.js'
 
 function parseRangeExpr(expr) {
     const parts = expr.split('-');

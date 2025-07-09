@@ -12,7 +12,7 @@ import SBL from '../lib/sbl.js'
 import { rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
 
-export default class App {
+export default class Core {
     static defaultConfig = {
         concurrent: 16,
         delay: [1, 5],
@@ -53,13 +53,13 @@ export default class App {
      * @param {string[]} target
      */
     constructor(config, target = 'http://httpbin.org/delay/10?id={1:}') {
-        /** @type {typeof App.defaultConfig} */
-        this.config = { ...App.defaultConfig, ...config, }
+        /** @type {typeof Core.defaultConfig} */
+        this.config = { ...Core.defaultConfig, ...config, }
         this.target = target
         this.eventEmitter = new EventEmitter()
         this.sbl = new SBL()
         this.alive = new LinkedList()
-        this.history = new RotatingArray(10)
+        // this.history = new RotatingArray(10)
         // this.errors = new RotatingArray(10)
         this.running = false
         this.nextDelay = rand(this.config.delay[0] * 1000, this.config.delay[1] * 1000,)
@@ -72,7 +72,7 @@ export default class App {
         let { url, header, cookie, ip } = this.sbl.execute()
         let ua = new UserAgent().toString()
         let headers = {
-            ...App.defaultHeaders,
+            ...Core.defaultHeaders,
             ...helper.buildClientHints(ua),
             'user-agent': ua
         }
@@ -162,7 +162,7 @@ export default class App {
                     // bodySummary: buff,
                 }
 
-                this.history.push(result)
+                // this.history.push(result)
                 this.emit('result', result)
             })
 
@@ -202,6 +202,7 @@ export default class App {
             await this.tick()
         }
     }
+    
 
     async tick() {
         let currentUnit = this.nextUnit().value
