@@ -2,14 +2,20 @@
 
 /**
  * @file  cli/ping.js
- * @description cli entry
+ * @description cli entry process arguments
  */
 
 import fs from 'fs/promises';
 import meow from 'meow';
 import winston from 'winston'
 import App from '../app/app.js'
+import run from './run.js'
 
+/**
+ * 
+ * @param {string} expr 
+ * @returns {number[]}
+ */
 function parseRangeExpr(expr) {
     const parts = expr.split('-');
     if (parts.length === 2) {
@@ -24,7 +30,7 @@ function parseRangeExpr(expr) {
 
 const cli = meow(`
   Usage
-    mass-ping [options] [args]
+    xping [options] [target]
 
   Options
     -c, --concurrent <num>     Set concurrent workers (default: 16)
@@ -32,7 +38,7 @@ const cli = meow(`
     -u, --unit <min[-max]>     Requests per cycle (default: 1)
     -H, --header <k:v>         Add custom request header (repeatable)
     -C, --cookies <file>       Load cookies.txt or cookies.json  from file
-    -b, --body <file>          File to use as request raw body
+    -b, --body <file>          File to use as request raw data
     -f, --form <file>          File to use as request data
     -m, --method <name>        HTTP method to use 
     -p, --proxy <url>          Proxy server to use (http/socks5)
@@ -47,10 +53,10 @@ const cli = meow(`
     -v, --version              Show version
 
   Arguments
-    ...   targets
+    1   target
 
   Examples
-    mass-ping -c 16 \\
+    xping -c 16 \\
       'https://example.com/?id={0:}&user={t5:32}&t={ms}'
 `, {
     importMeta: import.meta,
@@ -58,17 +64,17 @@ const cli = meow(`
         concurrent: {
             type: 'number',
             shortFlag: 'c',
-            default: 16
+            default: App.defaultConfig.concurrent
         },
         delay: {
             type: 'string',
             shortFlag: 'd',
-            default: '1-5'
+            default: App.defaultConfig.delay.join('-')
         },
         unit: {
             type: 'string',
             shortFlag: 'u',
-            default: '1'
+            default: App.defaultConfig.unit.join('-')
         },
         header: {
             type: 'string',
@@ -147,58 +153,20 @@ const cli = meow(`
     }
 })
 
-cli.flags.delay = parseRangeExpr(cli.flags.delay)
-cli.flags.unit = parseRangeExpr(cli.flags.unit)
+/** @type {typeof App.defaultConfig} */
+const config = cli.flags;
+const target = cli.input[0];
+config.delay = parseRangeExpr(cli.flags.delay);
+config.unit = parseRangeExpr(cli.flags.unit);
 
-
-const consoleFormat = winston.format.combine(
-    winston.format.timestamp(),                      // 带时间戳
-    winston.format.colorize(),                       // 控制台着色
-    // winston.format.align(),                          // 对齐
-    winston.format.printf(({ level, message, timestamp }) => {
-        return `[${timestamp.toString().substring(11, 19)}] ${level}: ${message}`
-    })
-)
-
-// 自定义 file 输出格式
-const fileFormat = winston.format.combine(
-    winston.format.timestamp(),                      // 带时间戳
-    winston.format.json()                            // JSON 格式
-)
-const logger = winston.createLogger({
-    transports: [
-        new winston.transports.Console({
-            format: consoleFormat,
-            // format: fileFormat,
-        }),
-        // new winston.transports.File({ filename: 'logs/combined.log' })
-    ]
-});
-
-const app = new App(cli.flags, cli.input[0])
-
-app.on('ready', () => {
-    logger.info('ready')
-})
-app.on('error', (error, reqInfo) => {
-    if (reqInfo) {
-        const { id, url } = reqInfo;
-        logger.error(`${error} (${id}) ${url}`);
-    } else {
-        logger.error(error)
-    }
-})
-
-app.on('submit', ({ id, url }) => {
-    logger.info(`submit(${id})  ${url}`);
-    logger.info(`alive(${app.alive.length})  ${app.alive}`);
-})
-
-
-app.on('result', ({ id, code, headers, bodySummary, phases }) => {
-    logger.info(`result(${id})  ${code} - ${phases}ms`);
-})
-
-await app.init()
-app.start()
-
+switch (target) {
+    case 'echo':
+        console.log(config);
+        console.log(cli.input);
+        break;
+    case 'tool':
+        console.log('TODO ...');
+        break;
+    default:
+        await run(config, target);
+}
