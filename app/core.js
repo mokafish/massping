@@ -22,7 +22,7 @@ export default class Core {
         body: '',
         form: '',
         method: 'GET',
-        referer: '',
+        referer: 'root',
         quality: [],
         proxy: '',
         silent: false,
@@ -58,8 +58,6 @@ export default class Core {
         this.eventEmitter = new EventEmitter()
         this.sbl = new SBL()
         this.alive = new LinkedList()
-        // this.history = new RotatingArray(10)
-        // this.errors = new RotatingArray(10)
         this.running = false
         this.nextDelay = rand(this.config.delay[0] * 1000, this.config.delay[1] * 1000,)
         this.nextUnit = rand(...this.config.unit)
@@ -76,9 +74,17 @@ export default class Core {
             'user-agent': ua
         }
 
-        //TODO: referer == root|same|none|<url>
-        if (true) {
-            headers['referer'] = new URL('/', url).toString()
+        switch (this.config.referer) {
+            case 'root':
+                headers['referer'] = new URL('/', url).toString()
+                break;
+            case 'same':
+                headers['referer'] = url
+                break;
+            case 'none':
+                break;
+            default:
+                headers['referer'] = this.config.referer
         }
 
         // randomized X-Forwarded-For and X-Real-IP address
@@ -114,11 +120,6 @@ export default class Core {
                 throwHttpErrors: false,
                 signal: controller.signal, // 绑定取消信号
             })
-
-            // let res = null
-            // req.on('response', response => {
-            //     res = response
-            // })
 
             let maxSize = this.config.maxSize || 65536
             let buff = Buffer.alloc(maxSize)
@@ -158,7 +159,7 @@ export default class Core {
                     code: response.statusCode,
                     headers: response.headers,
                     phases,
-                    // bodySummary: buff,
+                    bodySummary: buff,
                 }
 
                 // this.history.push(result)
