@@ -42,11 +42,14 @@ const cli = meow(`
     -f, --form <file>          File to use as request data
     -m, --method <name>        HTTP method to use 
     -r, --referer <rule>       Set referer "root", "same", "none" or any url
+    -q, --quality <rule>       Add quality test rule (repeatable)
     -p, --proxy <url>          Proxy server to use (http/socks5)
     -s, --silent               Suppress output logging
         --debug                Output debug log
         --http2                Use HTTP/2 protocol
         --tag                  Config tag brackets
+        --max-size <num>       Limit response body size (default: 65535)
+        --shutdown <num>       Shutdown if quality is below threshold
     -h, --help                 Show this help
     -v, --version              Show version
 
@@ -78,75 +81,68 @@ const cli = meow(`
             type: 'string',
             shortFlag: 'H',
             isMultiple: true,
-            default: []
+            default: App.defaultConfig.header || ''
         },
         cookies: {
             type: 'string',
             shortFlag: 'C',
-            default: '',
+            default: App.defaultConfig.cookies || ''
         },
         body: {
             type: 'string',
             shortFlag: 'b',
-            default: '',
-
+            default: App.defaultConfig.body || ''
         },
         form: {
             type: 'string',
             shortFlag: 'f',
-            default: '',
-
+            default: App.defaultConfig.form || ''
         },
         method: {
             type: 'string',
             shortFlag: 'm',
-            default: 'GET',
+            default: App.defaultConfig.method || ''
+        },
+        referer: {
+            type: 'string',
+            shortFlag: 'r',
+            default: App.defaultConfig.referer || ''
+        },
+        quality: {
+            type: 'string',
+            shortFlag: 'q',
+            isMultiple: true,
+            default: App.defaultConfig.quality || []
         },
         proxy: {
             type: 'string',
             shortFlag: 'p',
-            default: '',
+            default: App.defaultConfig.proxy || ''
         },
         silent: {
             type: 'boolean',
             shortFlag: 's',
-            default: false
+            default: App.defaultConfig.silent || false
         },
-        recover: {
-            type: 'string',
-            shortFlag: 'r',
-            default: '',
-        },
-        output: {
-            type: 'string',
-            shortFlag: 'o',
-            default: '',
-        },
-        outputStats: {
-            type: 'string',
-            default: '',
-        },
-        outputLog: {
-            type: 'string',
-            default: '',
+        debug: {
+            type: 'boolean',
+            default: App.defaultConfig.debug || false
         },
         http2: {
             type: 'boolean',
-            default: false
+            default: App.defaultConfig.http2 || false
         },
         tag: {
             type: 'string',
-            default: App.defaultConfig.tag
+            default: App.defaultConfig.tag || ''
         },
-        help: {
-            type: 'boolean',
-            shortFlag: 'h',
-            default: false
+        maxSize: {
+            type: 'number',
+            default: App.defaultConfig.maxSize || 65536
         },
-        version: {
-            type: 'boolean',
-            shortFlag: 'v',
-            default: false
+        shutdown: {
+            type: 'number',
+            default: App.defaultConfig.shutdown || 0
         }
     }
 })

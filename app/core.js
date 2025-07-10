@@ -22,16 +22,15 @@ export default class Core {
         body: '',
         form: '',
         method: 'GET',
+        referer: '',
+        quality: [],
         proxy: '',
         silent: false,
-        recover: '',
-        output: '',
-        outputStats: '',
-        outputLog: '',
+        debug: false,
         http2: false,
         tag: '{...}',
-        help: false,
-        version: false
+        maxSize: 65536,
+        shutdown: 0
     }
 
     static defaultHeaders = {
@@ -66,7 +65,7 @@ export default class Core {
         this.nextUnit = rand(...this.config.unit)
         this.nextID = seq(1)
     }
-    
+
 
     async submit() {
         let { url, header, cookie, ip } = this.sbl.execute()
@@ -76,7 +75,7 @@ export default class Core {
             ...helper.buildClientHints(ua),
             'user-agent': ua
         }
-        
+
         //TODO: referer == root|same|none|<url>
         if (true) {
             headers['referer'] = new URL('/', url).toString()
@@ -121,11 +120,11 @@ export default class Core {
             //     res = response
             // })
 
-            let maxResponse = this.config.maxResponse || 65536
-            let buff = Buffer.alloc(maxResponse)
+            let maxSize = this.config.maxSize || 65536
+            let buff = Buffer.alloc(maxSize)
             let bi = 0
             req.on('data', data => {
-                const rem = maxResponse - bi;  // 计算剩余空间
+                const rem = maxSize - bi;  // 计算剩余空间
                 if (data.length <= rem) {
                     // 当前数据块可完全放入缓冲区
                     buff.set(data, bi);
@@ -133,10 +132,10 @@ export default class Core {
                 } else {
                     // 只取能填满缓冲区的部分
                     buff.set(data.subarray(0, rem), bi);
-                    bi = maxResponse;  // 标记缓冲区已满
+                    bi = maxSize;  // 标记缓冲区已满
                 }
 
-                if (bi >= maxResponse) {
+                if (bi >= maxSize) {
                     controller.abort();
                     req.destroy()
                     req.emit('end')
@@ -144,7 +143,7 @@ export default class Core {
             })
 
             req.on('end', () => {
-                if (bi < maxResponse) {
+                if (bi < maxSize) {
                     buff = buff.subarray(0, bi);
                 }
                 this.alive.remove(node)
@@ -202,7 +201,7 @@ export default class Core {
             await this.tick()
         }
     }
-    
+
 
     async tick() {
         let currentUnit = this.nextUnit().value
