@@ -5,15 +5,20 @@ import net from 'net';
 import got from 'got';
 
 class TrafficStatsAgent extends http.Agent {
-    constructor(options = {}) {
+    /**
+     * 
+     * @param {http.AgentOptions} options  Agent options
+     * @param {string} proxy  proxy url
+     */
+    constructor(options = {}, proxy = null) {
         super(options);
         this.trafficStats = {
             sentBytes: 0,
             receivedBytes: 0
         };
     }
-
     createConnection(options, callback) {
+        console.log('createConnection');
         const socket = super.createConnection(options, callback);
         const originalWrite = socket.write;
         const agent = this;
@@ -41,13 +46,16 @@ class TrafficStatsAgent extends http.Agent {
 }
 
 class HttpsTrafficStatsAgent extends https.Agent {
+    /**
+     * 
+     * @param {https.AgentOptions} options 
+     */
     constructor(options = {}) {
         super(options);
         this.trafficStats = {
             sentBytes: 0,
-            receivedBytes: 0
+            receivedBytes: 0,
         };
-        this.sockets = new Set(); // 跟踪所有原始socket
     }
 
     createConnection(options, callback) {
@@ -63,21 +71,16 @@ class HttpsTrafficStatsAgent extends https.Agent {
             rejectUnauthorized: false
         });
 
-        // 保存原始socket用于后续统计
-        this.sockets.add(rawSocket);
-
         // TLS连接关闭时统计流量
         tlsSocket.on('close', () => {
             this.trafficStats.sentBytes += rawSocket.bytesWritten;
             this.trafficStats.receivedBytes += rawSocket.bytesRead;
-            this.sockets.delete(rawSocket);
         });
 
         tlsSocket.on('secureConnect', () => {
+            console.log('TSL secureConnect');
             callback(null, tlsSocket);
         });
-
-        tlsSocket.on('error', callback);
 
         return tlsSocket;
     }
@@ -88,7 +91,7 @@ class HttpsTrafficStatsAgent extends https.Agent {
 }
 
 // 使用示例 ================================
-const httpTrafficStatsAgent = new TrafficStatsAgent();
+const httpTrafficStatsAgent = new TrafficStatsAgent({keepAlive: true});
 const httpsTrafficStatsAgent = new HttpsTrafficStatsAgent();
 
 function submit1() {
@@ -119,4 +122,5 @@ function submit2() {
 
 // 执行测试
 submit1();
-submit2();
+setTimeout(submit1,3000)
+// submit2();
