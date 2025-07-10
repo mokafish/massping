@@ -41,7 +41,7 @@ export default class App extends Core {
     }
 
     report() {
-        let r = `report ----------------\n` +
+        let r = `report --------------------\n` +
             ` alive: ${this.alive.length}` +
             `  2xx: ${this.stats.get('2xx')}` +
             `  4xx: ${this.stats.get('4xx')}` +

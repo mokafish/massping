@@ -41,12 +41,10 @@ const cli = meow(`
     -b, --body <file>          File to use as request raw data
     -f, --form <file>          File to use as request data
     -m, --method <name>        HTTP method to use 
+    -r, --referer <rule>       Set referer "root", "same", "none" or any url
     -p, --proxy <url>          Proxy server to use (http/socks5)
     -s, --silent               Suppress output logging
-    -r, --recover <file>       Resume or create a session
-    -o, --output <dir>         Output directory for results
-        --output-stats <file>  File to save statistics
-        --output-log <file>    File to save log
+        --debug                Output debug log
         --http2                Use HTTP/2 protocol
         --tag                  Config tag brackets
     -h, --help                 Show this help
@@ -138,7 +136,7 @@ const cli = meow(`
         },
         tag: {
             type: 'string',
-            default: '{...}'
+            default: App.defaultConfig.tag
         },
         help: {
             type: 'boolean',
@@ -158,6 +156,10 @@ const config = cli.flags;
 const target = cli.input[0];
 config.delay = parseRangeExpr(cli.flags.delay);
 config.unit = parseRangeExpr(cli.flags.unit);
+
+if (config.method === 'GET' && (config.form || config.body)) {
+    config.method = 'POST'
+}
 
 switch (target) {
     case 'echo':

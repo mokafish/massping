@@ -19,22 +19,29 @@ const fileFormat = winston.format.combine(
     winston.format.timestamp(),
     winston.format.json()
 )
-const logger = winston.createLogger({
-    transports: [
-        new winston.transports.Console({
-            format: consoleFormat,
-            // format: fileFormat,
-        }),
-        // new winston.transports.File({ filename: 'logs/combined.log' })
-    ]
-});
+
+
 
 /**
  * 
- * @param {typeof App.defaultHeaders} config 
+ * @param {typeof App.defaultConfig} config 
  * @param {string} target 
  */
 export default async function run(config, target) {
+    const logger = winston.createLogger({
+        transports: [
+            new winston.transports.Console({
+                format: consoleFormat,
+                level: config.silent ? 'emerg' : (config.debug ? 'debug' : 'info'),
+
+            }),
+            // new winston.transports.File({
+            //     filename: 'logs/combined.log',
+            //     format: fileFormat,
+            //     level: 'debug',
+            // })
+        ]
+    });
 
     const app = new App(config, target)
 
@@ -52,12 +59,12 @@ export default async function run(config, target) {
     })
 
     app.on('submit', ({ id, url }) => {
-        logger.debug(`submit(${id}): ${url}; alive(${app.alive.length}): ${app.alive}`);
+        logger.debug(`submit ${id}, ${url}`);
     })
 
 
     app.on('result', ({ id, code, headers, bodySummary, phases }) => {
-        logger.debug(`result(${id}): ${code} - ${phases}ms`);
+        logger.debug(`result ${id}), ${code}, ${phases}ms`);
     })
 
     app.on('report', (report) => {
