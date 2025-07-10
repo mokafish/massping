@@ -17,20 +17,20 @@ export default class Core {
         concurrent: 16,
         delay: [1, 5],
         unit: [1, 1],
-        header: [],
-        cookies: '',
-        body: '',
-        form: '',
+        header: [], 
+        cookies: '', // TODO
+        body: '', // TODO
+        form: '', // TODO
         method: 'GET',
         referer: 'root',
-        quality: [],
-        proxy: '',
+        quality: [], // TODO
+        proxy: '', // TODO
         silent: false,
         debug: false,
-        http2: false,
+        http2: false, // TODO
         tag: '{...}',
         maxSize: 65536,
-        shutdown: 0
+        shutdown: 0  // TODO
     }
 
     static defaultHeaders = {
@@ -71,7 +71,8 @@ export default class Core {
         let headers = {
             ...Core.defaultHeaders,
             ...helper.buildClientHints(ua),
-            'user-agent': ua
+            'user-agent': ua,
+            ...helper.headersStringToObject(header),
         }
 
         switch (this.config.referer) {
@@ -183,7 +184,7 @@ export default class Core {
         try {
             this.sbl.load(this.target, 'url')
             this.sbl.load('{1-254}.{1-254}.{1-254}.{1-254}', 'ip')
-            this.sbl.load('', 'header')
+            this.sbl.load(this.config.header.join('\n'), 'header')
             this.sbl.load('', 'cookie')
             // this.interpreter.load('', 'form')
             // this.interpreter.load('', 'body')
