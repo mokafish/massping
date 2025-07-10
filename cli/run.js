@@ -60,9 +60,8 @@ export default async function run(config, target) {
         logger.debug(`result(${id}): ${code} - ${phases}ms`);
     })
 
-    app.on('report', () => {
-        logger.info([...app.history])
-        logger.info(app.alive)
+    app.on('report', (report) => {
+        logger.info(report)
     })
 
     await app.init()
