@@ -41,7 +41,11 @@ export default class App extends Core {
     }
 
     report() {
-        let r = `report --------------------\n` +
+        let tx = this.agent.http.trafficStats.sentBytes +
+            this.agent.https.trafficStats.sentBytes
+        let rx = this.agent.http.trafficStats.receivedBytes +
+            this.agent.https.trafficStats.receivedBytes
+        let r = `report ${tx}/${rx} --------------------\n` +
             ` alive: ${this.alive.length}` +
             `  2xx: ${this.stats.get('2xx')}` +
             `  4xx: ${this.stats.get('4xx')}` +

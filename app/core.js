@@ -11,13 +11,15 @@ import { RotatingArray, LinkedList } from '../lib/collection.js'
 import SBL from '../lib/sbl.js'
 import { rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
+import TrafficStatsAgent from '../lib/traffic-stats-agent.js'
+
 
 export default class Core {
     static defaultConfig = {
         concurrent: 16,
         delay: [1, 5],
         unit: [1, 1],
-        header: [], 
+        header: [],
         cookies: '', // TODO
         body: '', // TODO
         form: '', // TODO
@@ -62,6 +64,7 @@ export default class Core {
         this.nextDelay = rand(this.config.delay[0] * 1000, this.config.delay[1] * 1000,)
         this.nextUnit = rand(...this.config.unit)
         this.nextID = seq(1)
+        this.agent = TrafficStatsAgent({ keepAlive: true }, this.config.proxy)
     }
 
 
@@ -119,7 +122,8 @@ export default class Core {
                 isStream: true,
                 responseType: 'buffer',
                 throwHttpErrors: false,
-                signal: controller.signal, // 绑定取消信号
+                signal: controller.signal, // 绑定取消信号,
+                agent: this.agent,
             })
 
             let maxSize = this.config.maxSize || 65536
