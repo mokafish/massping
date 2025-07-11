@@ -12,6 +12,7 @@ import SBL from '../lib/sbl.js'
 import { rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
 import TrafficStatsAgent from '../lib/traffic-stats-agent.js'
+import { CookieJar } from 'tough-cookie';
 
 
 export default class Core {
@@ -110,6 +111,11 @@ export default class Core {
             bodySummary,
         }
 
+        const cookieJar = new CookieJar()
+        cookieJar.setCookie('a=1', url)
+        cookieJar.setCookie('b=2', url)
+
+
         const node = this.alive.append(id)
         this.emit('submit', reqInfo)
         const controller = new AbortController();
@@ -124,6 +130,7 @@ export default class Core {
                 throwHttpErrors: false,
                 signal: controller.signal, // 绑定取消信号,
                 agent: this.agent,
+                cookieJar,
             })
 
             let maxSize = this.config.maxSize || 65536

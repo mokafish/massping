@@ -30,10 +30,9 @@
   },
   "dependencies": {
     "got": "^14.4.7",
-    "http-proxy-agent": "^7.0.2",
     "meow": "^13.2.0",
     "socks": "^2.8.5",
-    "socks-proxy-agent": "^8.0.5",
+    "tough-cookie": "^5.1.2",
     "user-agents": "^1.1.593",
     "winston": "^3.17.0"
   },
