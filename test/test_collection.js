@@ -298,12 +298,12 @@ test('LinkedList: forLimit array [head, tail]', t => {
 test('LinkedList: toString', t => {
     const list = new LinkedList();
     [1, 2, 3].forEach(v => list.append(v));
-    t.is(list.toString(), '[ 1 <-> 2 <-> 3 ]');
+    t.is(list.toString(), '[ 1, 2, 3 ]');
     const empty = new LinkedList();
     t.is(empty.toString(), '[]');
     const longlist = new LinkedList();
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].forEach(v => longlist.append(v));
-    t.is(longlist.toString(), '[ 1 <-> 2 ... 8 <-> 9 <-> 10 ]');
-    t.is(longlist.toString(6), '[ 1 <-> 2 <-> 3 ... 8 <-> 9 <-> 10 ]');
+    t.is(longlist.toString(), '[ 1, 2 ... 8, 9, 10 ]');
+    t.is(longlist.toString(6), '[ 1, 2, 3 ... 8, 9, 10 ]');
 
 });

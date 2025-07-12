@@ -29,6 +29,16 @@ const fileFormat = winston.format.combine(
  */
 export default async function run(config, target) {
     const logger = winston.createLogger({
+        levels: {
+            emerg: 0,
+            alert: 1,
+            crit: 2,
+            error: 3,
+            warning: 4,
+            notice: 5,
+            info: 6,
+            debug: 7
+        },
         transports: [
             new winston.transports.Console({
                 format: consoleFormat,
@@ -59,16 +69,16 @@ export default async function run(config, target) {
     })
 
     app.on('submit', ({ id, url }) => {
-        logger.debug(`submit ${id}, ${url}`);
+        logger.info(`submit ${id} -> ${url}`);
     })
 
 
     app.on('result', ({ id, code, headers, bodySummary, phases }) => {
-        logger.debug(`result ${id}), ${code}, ${phases}ms`);
+        logger.info(`result ${id} <- ${code}, ${phases}ms`);
     })
 
     app.on('report', (report) => {
-        logger.info(report)
+        logger.notice(report)
     })
 
     await app.init()

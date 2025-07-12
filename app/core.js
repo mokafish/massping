@@ -30,7 +30,7 @@ export default class Core {
         quality: [], // TODO
         proxy: '',
         silent: false,
-        logLevel: 'info',
+        logLevel: 'notice',
         http2: false,  // TODO
         tag: '{...}',
         maxSize: 65536,

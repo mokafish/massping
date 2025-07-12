@@ -19,14 +19,14 @@ export default class App extends Core {
             res: 0,
         }
         this.history = new RotatingArray(10)
-        this.errors = new RotatingArray(10)
+        // this.errors = new RotatingArray(10)
         this.reportTimer = null
         this.on('result', ({ id, code, headers, bodySummary, phases }) => {
             let quality = 1
             let size = headers['content-length'] || bodySummary.length
 
             let { cdn } = checkHeaders(headers)
-            let note = `cdn:${cdn}`
+            let note = cdn === '?' ? '' : ('cdn:' + cdn)
             if (cdn === 'HIT') {
                 quality *= 0.6
             }
@@ -52,7 +52,7 @@ export default class App extends Core {
             this.stats.inc('err')
             if (reqInfo) {
                 const { id, url } = reqInfo;
-                this.errors.push({ error: error.name, id, url, time: Date.now() })
+                // this.errors.push({ error: error.name, id, url, time: Date.now() })
             }
         })
     }
@@ -81,10 +81,10 @@ export default class App extends Core {
             }
         }
 
-        avgQuality /= historyCount
+        avgQuality = historyCount ? avgQuality / historyCount : 1
 
         r += ` cpu: ${adaptiveToFixed(cpup)}%  mem: ${readableBytes(mem)}B  net: ${readableBytes(Math.max(txp, rxp))}B/s\n` +
-            ` req: ${readableBytes(req)}P  tx:${readableBytes(tx)}B  rx:${readableBytes(rx)}B  Q: ${(avgQuality.toFixed(1))}\n` +
+            ` req: ${readableBytes(req)}P  tx: ${readableBytes(tx)}B  rx: ${readableBytes(rx)}B  q: ${(avgQuality.toFixed(1))}\n` +
             ` alive: ${this.alive.length}` +
             `  2xx: ${this.stats.get('2xx')}` +
             `  4xx: ${this.stats.get('4xx')}` +
