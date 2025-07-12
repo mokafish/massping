@@ -1,6 +1,6 @@
 {
   "name": "massping",
-  "description": "",
+  "description": "Mass send http requests for test web application",
   "version": "1.0.2",
   "type": "module",
   "main": "index.js",

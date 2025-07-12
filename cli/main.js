@@ -31,7 +31,7 @@ function parseRangeExpr(expr) {
 
 const cli = meow(`
   Usage
-    xping [options] [target]
+    massping [options] <target>
 
   Options
     -c, --concurrent <num>     Set concurrent workers (default: 16)
@@ -39,8 +39,9 @@ const cli = meow(`
     -u, --unit <min[-max]>     Requests per cycle (default: 1)
     -H, --header <k:v>         Add custom request header (repeatable)
     -C, --cookies <file>       Load cookies.txt or cookies.json  from file
-    -b, --body <file>          File to use as request raw data
-    -f, --form <file>          File to use as request data
+    -b, --body <file>          File to use as request text data
+    -B, --body-binary <file>   File to use as request binary data
+    -f, --form <file>          File to use as request form data
     -m, --method <name>        HTTP method to use 
     -r, --referer <rule>       Set referer "root", "same", "none" or any url
     -q, --quality <rule>       Add quality test rule (repeatable)
@@ -52,14 +53,17 @@ const cli = meow(`
         --max-size <num>       Limit response body size (default: 65535)
         --shutdown <num>       Shutdown if quality is below threshold
     -h, --help                 Show this help
+        --help-sbl             Show help for SBL
     -v, --version              Show version
 
   Arguments
-    1   target
+    target                     Target url with SBL tag
 
   Examples
-    xping -c 16 \\
+    massping -c 16 \\
       'https://example.com/?id={0:}&user={t5:32}&t={ms}'
+  About
+    * Online document https://github.com/mokafish/massping#readme
 `, {
     importMeta: import.meta,
     flags: {
