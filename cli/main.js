@@ -47,7 +47,7 @@ const cli = meow(`
     -q, --quality <rule>       Add quality test rule (repeatable)
     -p, --proxy <url>          Proxy server to use (http/socks5)
     -s, --silent               Suppress output logging
-    -l, --log-level            Set log level (default: info)
+    -l, --log-level            Set log level (default: notice)
         --http2                Use HTTP/2 protocol
         --tag  <style>         Config tag brackets style (default: {...})
         --max-size <num>       Limit response body size (default: 65535)

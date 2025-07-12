@@ -46,15 +46,18 @@ massping [options] <target>
 -q, --quality <rule>       Add quality test rule (repeatable)
 -p, --proxy <url>          Proxy server to use (http/socks5)
 -s, --silent               Suppress output logging
-    --debug                Output debug log
+-l, --log-level            Set log level (default: notice)
     --http2                Use HTTP/2 protocol
-    --tag                  Config tag brackets
+    --tag  <style>         Config tag brackets style (default: {...})
     --max-size <num>       Limit response body size (default: 65535)
     --shutdown <num>       Shutdown if quality is below threshold
 -h, --help                 Show this help
     --help-sbl             Show help for SBL
 -v, --version              Show version
 ```
+
+> `--body`, `--body-binary`, `--form`, `--http2`, `--quality`, `--shutdown` 
+haven't working yet.
 
 ### Target
 Target url with SBL tag
