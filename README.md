@@ -1,10 +1,20 @@
 # Massping - Mass send requests for test web application
 [![Node.js Package](https://github.com/mokafish/massping/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/mokafish/massping/actions/workflows/npm-publish.yml)
 
+**Example**
+
+```shell
+massping -c 16 -d 5-10 'http://example.com/ranking.php?channel={1-99}&ts={ms}'
+```
+
+Use up to 16 concurrent requests for ranking page, with an interval of 5-10 seconds for each request, and generate a random number of 1-99 and a timestamp to insert into the parameters.
+
 **Table of content**
  - [Install](#Install)
  - [Using](#Using)
  - [SBL](#SBL)
+
+
 
 ## Install
 
@@ -16,7 +26,7 @@ npm i -g massping
 
 ## Using
 
-```
+```shell
 massping [options] <target>
 ```
 
@@ -50,7 +60,7 @@ massping [options] <target>
 Target url with SBL tag
 
 ## SBL
-Structured Build Language (SBL) is a domain-specific language used to generate data. Similar to template engines, uses interpolation tags to render data into text. What sets it apart is that its tags are not predefined variables, but rather a syntax governed by specific generation rules.
+Structured Build Language (SBL) is a domain-specific language used to generate data. Similar to template engines, uses interpolation tags to render data into text. What sets it apart is that its tag are not predefined variables, but rather a syntax governed by specific generation rules.
 
 **Simple Demo**
 * SBL source code:  `/{zh,en}/{1:5}?i={100-200}`
@@ -61,8 +71,6 @@ Structured Build Language (SBL) is a domain-specific language used to generate d
 * 5th execution: `/zh/5?i=200`
 * 6th execution: `/en/1?i=100`
 * 100th execution: `/en/5?i=111`
-
-Yes, you can do it as many times as you want.
 
 ### Syntaxs
 
