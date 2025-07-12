@@ -1,14 +1,14 @@
 {
-  "name": "mass-ping",
+  "name": "massping",
   "description": "",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "ava"
   },
   "bin": {
-    "mass-ping": "./cli/main.js"
+    "massping": "./cli/main.js"
   },
   "repository": {
     "type": "git",
