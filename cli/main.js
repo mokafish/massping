@@ -10,6 +10,7 @@ import meow from 'meow';
 import winston from 'winston'
 import App from '../app/app.js'
 import run from './run.js'
+import { tryint } from '../lib/helper.js';
 
 /**
  * 
@@ -162,9 +163,15 @@ switch (target) {
         console.log(config);
         console.log(cli.input);
         break;
+    case 'server':
+        let p = tryint(cli.input[1], 8504)
+        import('../app/server.js').then(x => {
+            x.default(p)
+        })
+        break;
     case 'tool':
         console.log('TODO ...');
         break;
     default:
-        await run(config, target);
+        run(config, target);
 }

@@ -68,7 +68,9 @@ server.on('error', (err) => {
     console.error('server: ' + err);
 })
 
-let port = 8504
-server.listen(port, () => {
-    console.log('listen [::]:' + port);
-});
+export default (port = 8504) => {
+    server.listen(port, () => {
+        console.log('listen [::]:' + port);
+    });
+}
+
