@@ -13,6 +13,7 @@ import { rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
 import TrafficStatsAgent from '../lib/traffic-stats-agent.js'
 import { CookieJar } from 'tough-cookie';
+import { loadFromString, toHeaderString } from '../lib/cookies.js';
 
 
 export default class Core {
@@ -21,13 +22,13 @@ export default class Core {
         delay: [1, 5],
         unit: [1, 1],
         header: [],
-        cookies: '', // TODO
+        cookies: '', 
         body: '', // TODO
         form: '', // TODO
         method: 'GET',
         referer: 'root',
         quality: [], // TODO
-        proxy: '', // TODO
+        proxy: '', 
         silent: false,
         debug: false,
         http2: false, // TODO
@@ -98,7 +99,10 @@ export default class Core {
             headers['X-Real-IP'] = ip
         }
 
-        let cookies = {}
+        if (cookie){
+            headers['cookie'] = toHeaderString(loadFromString(cookie))
+        }
+
         let body = ''
         let bodySummary = ''
         // let sym = Symbol(url)
@@ -107,14 +111,9 @@ export default class Core {
             id,
             url,
             headers,
-            cookies,
             bodySummary,
         }
-
-        const cookieJar = new CookieJar()
-        cookieJar.setCookie('a=1', url)
-        cookieJar.setCookie('b=2', url)
-
+    
 
         const node = this.alive.append(id)
         this.emit('submit', reqInfo)
@@ -130,7 +129,6 @@ export default class Core {
                 throwHttpErrors: false,
                 signal: controller.signal, // 绑定取消信号,
                 agent: this.agent,
-                cookieJar,
             })
 
             let maxSize = this.config.maxSize || 65536
@@ -196,13 +194,21 @@ export default class Core {
             this.sbl.load(this.target, 'url')
             this.sbl.load('{1-254}.{1-254}.{1-254}.{1-254}', 'ip')
             this.sbl.load(this.config.header.join('\n'), 'header')
-            this.sbl.load('', 'cookie')
+            if (this.config.cookies) {
+                // TODO: if extname == 'json'
+                let data = await fs.readFile(this.config.cookies, 'utf-8')
+                this.sbl.load(data, 'cookie')
+            } else {
+                this.sbl.load('', 'cookie')
+            }
             // this.interpreter.load('', 'form')
             // this.interpreter.load('', 'body')
             this.sbl.ready()
             this.emit('ready')
         } catch (e) {
-            this.emit('error', e)
+            console.log(e);
+            console.log('xping: init fial');
+            process.exit(1)
         }
     }
 

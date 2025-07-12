@@ -3,7 +3,7 @@ temp/
 *.tmp.*
 tmp.*
 .trash/
-
+cookies.txt
 
 # Logs
 logs
