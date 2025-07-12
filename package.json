@@ -1,5 +1,5 @@
 {
-  "name": "xping",
+  "name": "mass-ping",
   "description": "",
   "version": "1.0.0",
   "type": "module",
@@ -8,7 +8,7 @@
     "test": "ava"
   },
   "bin": {
-    "xping": "./cli/main.js"
+    "mass-ping": "./cli/main.js"
   },
   "repository": {
     "type": "git",
