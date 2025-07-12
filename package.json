@@ -1,7 +1,7 @@
 {
   "name": "massping",
   "description": "",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mokafish/xping.git"
+    "url": "git+https://github.com/mokafish/massping.git"
   },
   "keywords": [
     "test",
@@ -22,9 +22,9 @@
   "author": "mokafish",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/mokafish/xping/issues"
+    "url": "https://github.com/mokafish/massping/issues"
   },
-  "homepage": "https://github.com/mokafish/xping#readme",
+  "homepage": "https://github.com/mokafish/massping#readme",
   "devDependencies": {
     "ava": "^6.4.0"
   },
