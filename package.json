@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "dev":"node cli/main \"http://httpbin.org/delay/10?id={1:}\""
   },
   "bin": {
     "massping": "./cli/main.js"
