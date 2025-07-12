@@ -32,7 +32,7 @@ export default async function run(config, target) {
         transports: [
             new winston.transports.Console({
                 format: consoleFormat,
-                level: config.silent ? 'emerg' : (config.debug ? 'debug' : 'info'),
+                level: config.silent ? 'emerg' : (config.logLevel),
 
             }),
             // new winston.transports.File({

@@ -21,19 +21,20 @@ export default class Core {
         delay: [1, 5],
         unit: [1, 1],
         header: [],
-        cookies: '', 
+        cookies: '',
         body: '', // TODO
+        bodyBinary: '', // TODO
         form: '', // TODO
         method: 'GET',
         referer: 'root',
         quality: [], // TODO
-        proxy: '', 
+        proxy: '',
         silent: false,
-        debug: false,
-        http2: false, // TODO
+        logLevel: 'info',
+        http2: false,  // TODO
         tag: '{...}',
         maxSize: 65536,
-        shutdown: 0  // TODO
+        shutdown: 0, // TODO
     }
 
     static defaultHeaders = {
@@ -98,7 +99,7 @@ export default class Core {
             headers['X-Real-IP'] = ip
         }
 
-        if (cookie){
+        if (cookie) {
             headers['cookie'] = toHeaderString(loadFromString(cookie))
         }
 
@@ -112,7 +113,7 @@ export default class Core {
             headers,
             bodySummary,
         }
-    
+
 
         const node = this.alive.append(id)
         this.emit('submit', reqInfo)

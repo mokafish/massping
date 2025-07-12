@@ -47,9 +47,9 @@ const cli = meow(`
     -q, --quality <rule>       Add quality test rule (repeatable)
     -p, --proxy <url>          Proxy server to use (http/socks5)
     -s, --silent               Suppress output logging
-        --debug                Output debug log
+    -l, --log-level            Set log level (default: info)
         --http2                Use HTTP/2 protocol
-        --tag                  Config tag brackets
+        --tag  <style>         Config tag brackets style (default: {...})
         --max-size <num>       Limit response body size (default: 65535)
         --shutdown <num>       Shutdown if quality is below threshold
     -h, --help                 Show this help
@@ -63,7 +63,7 @@ const cli = meow(`
     massping -c 16 \\
       'https://example.com/?id={0:}&user={t5:32}&t={ms}'
   About
-    * Online document https://github.com/mokafish/massping#readme
+    * Online document: https://github.com/mokafish/massping#readme
 `, {
     importMeta: import.meta,
     flags: {
@@ -98,6 +98,11 @@ const cli = meow(`
             shortFlag: 'b',
             default: App.defaultConfig.body || ''
         },
+        bodyBinary: {
+            type: 'string',
+            shortFlag: 'B',
+            default: App.defaultConfig.bodyBinary || ''
+        },
         form: {
             type: 'string',
             shortFlag: 'f',
@@ -129,9 +134,10 @@ const cli = meow(`
             shortFlag: 's',
             default: App.defaultConfig.silent || false
         },
-        debug: {
-            type: 'boolean',
-            default: App.defaultConfig.debug || false
+        logLevel: {
+            type: 'string',
+            shortFlag: 'l',
+            default: App.defaultConfig.logLevel || 'info'
         },
         http2: {
             type: 'boolean',
@@ -139,7 +145,7 @@ const cli = meow(`
         },
         tag: {
             type: 'string',
-            default: App.defaultConfig.tag || ''
+            default: App.defaultConfig.tag || '{...}'
         },
         maxSize: {
             type: 'number',
@@ -148,7 +154,11 @@ const cli = meow(`
         shutdown: {
             type: 'number',
             default: App.defaultConfig.shutdown || 0
-        }
+        },
+        helpSbl: {
+            type: 'boolean',
+            default: false
+        },
     }
 })
 
@@ -158,11 +168,61 @@ const target = cli.input[0];
 config.delay = parseRangeExpr(cli.flags.delay);
 config.unit = parseRangeExpr(cli.flags.unit);
 
-if (config.method === 'GET' && (config.form || config.body)) {
+if (config.method === 'GET' && (config.form || config.body || config.bodyBinary)) {
     config.method = 'POST'
 }
 
+if (cli.flags.helpSbl) {
+    console.log(`
+Structured Build Language (SBL) is a domain-specific language used to generate data. 
+Similar to template engines, uses interpolation tags to render data into text. 
+What sets it apart is that its tag are not predefined variables, 
+but rather a syntax governed by specific generation rules.
+
+**Simple Demo**
+* SBL source code:  \`/{zh,en}/{1:5}?i={100-200}\`
+* 1st execution: \`/zh/1?i=123\`
+* 2nd execution: \`/en/2?i=163\`
+* 3rd execution: \`/zh/3?i=155\`
+* 4th execution: \`/en/4?i=178\`
+* 5th execution: \`/zh/5?i=200\`
+* 6th execution: \`/en/1?i=100\`
+* 100th execution: \`/en/5?i=111\`
+
+### Syntaxs
+
+>All interval representations are closed intervals.
+>There can be no spaces in syntax.
+
+- Random \`min-max\`
+- Sequence \`start:end:step\`
+- Random text \`<type>minLength-maxLength\`
+    - type \`t\`: from A-Z, a-z and 0-9 chars
+    - type \`u\`: from A-Z chars
+    - type \`l\`: from a-z chars
+    - type \`w\`: from A-Z and a-z chars
+    - type \`h\`: from 0-9 and a-f chars
+    - type \`H\`: from 0-9 and a-H chars
+    - type \`d\`: from 0-9 chars
+- Cartesian power text \`<type>startLength:endLength\` 
+    - type be the same as the above
+- Choose
+    - random mode: \`word1|word2|...\`
+    - orderly mode: \`word1,word2,...\`
+    - from file \`choose:<filename>\`, file content one word per line
+        - 'choose' lowercase is random mode, and uppercase is orderly mode.
+- time stamp of seconds \`ts\`
+- time stamp of milliseconds \`ms\`
+- reference \`#id\``);
+    process.exit(0)
+}
+
+
 switch (target) {
+    case undefined:
+        console.log(`${cli.pkg.name}/${cli.pkg.version}`);
+        cli.showHelp()
+        break;
     case 'echo':
         console.log(config);
         console.log(cli.input);
