@@ -81,7 +81,7 @@ export default class Core {
         let ua = new UserAgent().toString()
         let headers = {
             ...Core.defaultHeaders,
-            ...helper.buildClientHints(ua),
+            // ...helper.buildClientHints(ua),
             'user-agent': ua,
             ...helper.headersStringToObject(header),
         }
