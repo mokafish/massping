@@ -2,11 +2,14 @@
 [![Node.js Package](https://github.com/mokafish/massping/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/mokafish/massping/actions/workflows/npm-publish.yml)
 
 **Table of content**
- - install
- - using
- - 
+ - [Install](#Install)
+ - [Using](#Using)
+ - [SBL](#SBL)
 
 ## Install
+
+> Node version is at least 22
+
 ```shell
 npm i -g massping
 ```
@@ -59,6 +62,31 @@ Structured Build Language (SBL) is a domain-specific language used to generate d
 * 6th execution: `/en/1?i=100`
 * 100th execution: `/en/5?i=111`
 
+Yes, you can do it as many times as you want.
+
 ### Syntaxs
-### Random
+
+>All interval representations are closed intervals.
+>There can be no spaces in syntax.
+
+- Random `min-max`
+- Sequence `start:end:step`
+- Random text `<type>minLength-maxLength`
+    - type `t`: from A-Z, a-z and 0-9 chars
+    - type `u`: from A-Z chars
+    - type `l`: from a-z chars
+    - type `w`: from A-Z and a-z chars
+    - type `h`: from 0-9 and a-f chars
+    - type `H`: from 0-9 and a-H chars
+    - type `d`: from 0-9 chars
+- Cartesian power text `<type>startLength:endLength` 
+    - type be the same as the above
+- Choose
+    - random mode: `word1|word2|...`
+    - orderly mode: `word1,word2,...`
+    - from file `choose:<filename>`, file content one word per line
+        - 'choose' lowercase is random mode, and uppercase is orderly mode.
+- time stamp of seconds `ts`
+- time stamp of milliseconds `ms`
+- reference `#id`
 
