@@ -12,7 +12,6 @@ import SBL from '../lib/sbl.js'
 import { rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
 import TrafficStatsAgent from '../lib/traffic-stats-agent.js'
-import { CookieJar } from 'tough-cookie';
 import { loadFromString, toHeaderString } from '../lib/cookies.js';
 
 
