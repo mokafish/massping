@@ -66,7 +66,13 @@ export default class Core {
         this.nextDelay = rand(this.config.delay[0] * 1000, this.config.delay[1] * 1000,)
         this.nextUnit = rand(...this.config.unit)
         this.nextID = seq(1)
-        this.agent = TrafficStatsAgent({ keepAlive: true }, this.config.proxy)
+        this.trafficStats = {
+            tx: 0,
+            rx: 0,
+            req: 0,
+            res: 0,
+        }
+        this.agent = TrafficStatsAgent({ keepAlive: true },  this.trafficStats, this.config.proxy)
     }
 
 
@@ -131,6 +137,8 @@ export default class Core {
                 agent: this.agent,
             })
 
+            this.trafficStats.req++;
+
             let maxSize = this.config.maxSize || 65536
             let buff = Buffer.alloc(maxSize)
             let bi = 0
@@ -172,6 +180,7 @@ export default class Core {
                     bodySummary: buff,
                 }
 
+                this.trafficStats.res++;
                 // this.history.push(result)
                 this.emit('result', result)
             })
