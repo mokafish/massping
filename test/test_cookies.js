@@ -102,9 +102,9 @@ test('toHeaderString - 安全协议检查', t => {
   t.is(header, 'insecure=2');
 });
 
-test('toHeaderString - 编码特殊字符', t => {
+test('toHeaderString - 不额外编码', t => {
   const cookies = [
-    { domain: 'a.com', flag: true, path: '/', secure: false, expiration: 0, name: 'user', value: 'john=doe' }
+    { domain: 'a.com', flag: true, path: '/', secure: false, expiration: 0, name: 'user', value: 'john%3Ddoe' }
   ];
   
   t.is(toHeaderString(cookies), 'user=john%3Ddoe');
