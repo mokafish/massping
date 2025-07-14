@@ -122,7 +122,6 @@ export default class Core {
         }
 
         let bodySummary = body.slice(0, 32)
-        body = Buffer.from(body)
 
         if (this.config.bodyBinary) {
             // body = fs.createReadStream(this.config.bodyBinary)
