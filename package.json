@@ -1,12 +1,12 @@
 {
   "name": "massping",
   "description": "Mass send http requests for test web application",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "dev":"node cli/main \"http://httpbin.org/delay/10?id={1:}\""
+    "dev": "node cli/main \"http://httpbin.org/delay/10?id={1:}\""
   },
   "bin": {
     "massping": "./cli/main.js"
@@ -32,6 +32,7 @@
   "dependencies": {
     "got": "^14.4.7",
     "meow": "^13.2.0",
+    "mime": "^4.0.7",
     "socks": "^2.8.5",
     "user-agents": "^1.1.593",
     "winston": "^3.17.0"

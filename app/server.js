@@ -24,7 +24,7 @@ const content = `<!DOCTYPE html>
 <body>
     <h1>504 Gateway Timeout</h1>
     <hr>
-    <p>xping/1.0.0</p>
+    <p>massping/1.0.6</p>
 </body>
 
 </html>
@@ -47,7 +47,7 @@ const server = net.createServer((socket) => {
             'Content-Type: text/html; charset=utf-8',
             `Content-Length: ${content.length}`,
             `Date: ${new Date().toUTCString()}`,
-            'Server: xping',
+            'Server: massping',
             'Connection: close',
             '',
             content

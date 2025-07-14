@@ -4,6 +4,9 @@ temp/
 tmp.*
 .trash/
 cookies.txt
+*.urlencoded
+*.form
+*.form-data
 
 # Logs
 logs

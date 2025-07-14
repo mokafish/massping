@@ -1,11 +1,14 @@
 /** 
  * @file app/core.js
- * @description xping core  
+ * @description massping core  
  */
 
 import { EventEmitter } from 'events'
-import fs from 'fs/promises';
+import fs from 'fs';
 import got from 'got';
+import { Mime } from 'mime/lite';
+import standardTypes from 'mime/types/standard.js';
+import otherTypes from 'mime/types/other.js';
 import UserAgent from 'user-agents';
 import { RotatingArray, LinkedList } from '../lib/collection.js'
 import SBL from '../lib/sbl.js'
@@ -13,6 +16,10 @@ import { rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
 import TrafficStatsAgent from '../lib/traffic-stats-agent.js'
 import { loadFromString, toHeaderString } from '../lib/cookies.js';
+
+const mime = new Mime(standardTypes, otherTypes);
+mime.define({'application/x-www-form-urlencoded': ['urlencoded']});
+mime.define({'multipart/form-data': ['form','form-data']});
 
 
 export default class Core {
@@ -72,12 +79,12 @@ export default class Core {
             req: 0,
             res: 0,
         }
-        this.agent = TrafficStatsAgent({ keepAlive: true },  this.trafficStats, this.config.proxy)
+        this.agent = TrafficStatsAgent({ keepAlive: true }, this.trafficStats, this.config.proxy)
     }
 
 
     async submit() {
-        let { url, header, cookie, ip } = this.sbl.execute()
+        let { url, header, cookie, ip, body } = this.sbl.execute()
         let ua = new UserAgent().toString()
         let headers = {
             ...Core.defaultHeaders,
@@ -109,8 +116,22 @@ export default class Core {
             headers['cookie'] = toHeaderString(loadFromString(cookie))
         }
 
-        let body = ''
-        let bodySummary = ''
+        if (body) {
+            headers['content-type'] = mime.getType(this.config.body) || 'text/plain'
+            headers['content-length'] = body.length
+        }
+
+        let bodySummary = body.slice(0, 32)
+        body = Buffer.from(body)
+
+        if (this.config.bodyBinary) {
+            // body = fs.createReadStream(this.config.bodyBinary)
+            body = fs.readFileSync(this.config.bodyBinary)
+            headers['content-type'] = mime.getType(this.config.bodyBinary) || 'application/octet-stream'
+            headers['content-length'] = body.length
+            bodySummary = `[Binary:${this.config.bodyBinary}]`
+        }
+
         // let sym = Symbol(url)
         let id = this.nextID().value
         let reqInfo = {
@@ -126,10 +147,9 @@ export default class Core {
         const controller = new AbortController();
         try {
             const req = got(url, {
-                method: 'GET',
+                method: this.config.method,
                 headers,
-                cookieJar: undefined,
-                body: undefined,
+                body: body || undefined,
                 isStream: true,
                 responseType: 'buffer',
                 throwHttpErrors: false,
@@ -205,18 +225,23 @@ export default class Core {
             this.sbl.load(this.config.header.join('\n'), 'header')
             if (this.config.cookies) {
                 // TODO: if extname == 'json'
-                let data = await fs.readFile(this.config.cookies, 'utf-8')
+                let data = fs.readFileSync(this.config.cookies, 'utf-8')
                 this.sbl.load(data, 'cookie')
             } else {
                 this.sbl.load('', 'cookie')
             }
-            // this.interpreter.load('', 'form')
-            // this.interpreter.load('', 'body')
+            // this.sbl.load('', 'form')
+            if (this.config.body) {
+                let data = fs.readFileSync(this.config.body, 'utf-8')
+                this.sbl.load(data, 'body')
+            } else {
+                this.sbl.load('', 'body')
+            }
             this.sbl.ready()
             this.emit('ready')
         } catch (e) {
             console.log(e);
-            console.log('xping: init fial');
+            console.log('massping: init fial');
             process.exit(1)
         }
     }
