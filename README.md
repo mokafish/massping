@@ -56,7 +56,7 @@ massping [options] <target>
 -v, --version              Show version
 ```
 
-> `--body`, `--body-binary`, `--form`, `--http2`, `--quality`, `--shutdown` 
+> `--form`, `--http2`, `--quality`, `--shutdown` 
 haven't working yet.
 
 ### Target
