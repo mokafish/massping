@@ -159,6 +159,16 @@ const cli = meow(`
             type: 'boolean',
             default: false
         },
+        help: {
+            type: 'boolean',
+            shortFlag: 'h',
+            default: false
+        },
+        version: {
+            type: 'boolean',
+            shortFlag: 'v',
+            default: false
+        },
     }
 })
 
