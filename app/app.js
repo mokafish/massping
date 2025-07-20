@@ -108,3 +108,8 @@ function checkHeaders(headersObj) {
     }
     return { cdn }
 }
+
+function checkResponse(headersObj, bodySummary){
+
+
+}

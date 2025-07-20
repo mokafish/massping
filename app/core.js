@@ -5,6 +5,8 @@
 
 import { EventEmitter } from 'events'
 import fs from 'fs';
+import net from 'net';
+import dns from 'dns';
 import got from 'got';
 import { Mime } from 'mime/lite';
 import standardTypes from 'mime/types/standard.js';
@@ -12,14 +14,14 @@ import otherTypes from 'mime/types/other.js';
 import UserAgent from 'user-agents';
 import { RotatingArray, LinkedList } from '../lib/collection.js'
 import SBL from '../lib/sbl.js'
-import { rand, seq } from '../lib/generator.js';
+import { choose, rand, seq } from '../lib/generator.js';
 import helper from '../lib/helper.js';
 import TrafficStatsAgent from '../lib/traffic-stats-agent.js'
 import { loadFromString, toHeaderString } from '../lib/cookies.js';
 
 const mime = new Mime(standardTypes, otherTypes);
-mime.define({'application/x-www-form-urlencoded': ['urlencoded']});
-mime.define({'multipart/form-data': ['form','form-data']});
+mime.define({ 'application/x-www-form-urlencoded': ['urlencoded'] });
+mime.define({ 'multipart/form-data': ['form', 'form-data'] });
 
 
 export default class Core {
@@ -38,6 +40,7 @@ export default class Core {
         proxy: '',
         silent: false,
         logLevel: 'notice',
+        ip: [],
         http2: false,  // TODO
         tag: '{...}',
         maxSize: 65536,
@@ -154,6 +157,7 @@ export default class Core {
                 throwHttpErrors: false,
                 signal: controller.signal, // 绑定取消信号,
                 agent: this.agent,
+                dnsLookup:makeDNSLookuper(this.config.ip)
             })
 
             this.trafficStats.req++;
@@ -286,3 +290,57 @@ export default class Core {
     }
 }
 
+
+function makeDNSLookuper(ips = []) {
+    if (ips.length) {
+        let nextip = choose(ips, true)
+        return function myDNSLookup(host, options, callback) {
+            // 标准化参数处理
+            if (typeof options === 'function') {
+                callback = options;
+                options = {};
+            } else if (typeof options === 'number') {
+                options = { family: options };
+            }
+
+            // 设置默认值
+            options = {
+                family: options.family || 0,
+                hints: options.hints || 0,
+                all: options.all || false,
+                ...options
+            };
+
+
+            const ip = nextip().value
+            const family = net.isIP(ip);
+
+            if (family === 0) { // 无效IP
+                return callback(new Error(`Invalid IP address: ${ip}`));
+            }
+
+            let address = ip;
+            let resultFamily = family;
+
+            // 处理V4MAPPED转换
+            if (options.family === 6 && family === 4 && (options.hints & dns.V4MAPPED)) {
+                address = `::ffff:${ip}`;
+                resultFamily = 6;
+            }
+
+            // 检查ADDRCONFIG配置
+            if ((options.hints & dns.ADDRCONFIG) && !hasAddressFamily(resultFamily)) {
+                return handleNotFound(host, options, callback);
+            }
+
+            // 返回结果
+            if (options.all) {
+                callback(null, [{ address, family: resultFamily }]);
+            } else {
+                callback(null, address, resultFamily);
+            }
+        }
+    } else {
+        return dns.lookup
+    }
+}
