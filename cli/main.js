@@ -249,6 +249,11 @@ switch (target) {
             x.default(p)
         })
         break;
+    case 'mkform':
+        import('./mkform.js').then(x => {
+            x.mkform(cli.input[1], cli.input[2])
+        })
+        break;
     case 'tool':
         console.log('TODO ...');
         break;

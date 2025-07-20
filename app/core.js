@@ -8,6 +8,7 @@ import fs from 'fs';
 import net from 'net';
 import dns from 'dns';
 import got from 'got';
+import FormData from 'form-data';
 import { Mime } from 'mime/lite';
 import standardTypes from 'mime/types/standard.js';
 import otherTypes from 'mime/types/other.js';

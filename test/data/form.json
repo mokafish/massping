@@ -1,0 +1,12 @@
+{
+    "form": {
+        "name": "value",
+        "x": {
+            "value":"1232",
+            "content-type": "text/plain"
+        },
+        "file":{
+            "filename":"fruits.txt"
+        }
+    }
+}
